@@ -30,7 +30,7 @@ class MainDialog(QWidget):
         self.ui.setupUi(self)
         self.ui.pushButton.clicked.connect(self.search)
         self.ui.queryEdit.returnPressed.connect(self.search)
-        self.ui.scan_button.clicked.connect(self.scan_all_disk_part)
+        self.ui.scan_button.clicked.connect(self.scan_all_disk_part_confirm)
         self.setWindowTitle('Fast查询')
         self.setWindowIcon(QIcon('img/tb.jpg'))
         self.setFixedSize(self.width(), self.height())
@@ -92,6 +92,13 @@ class MainDialog(QWidget):
             if self.search_state == 1 and not self.task_search.isAlive():
                 self.search_state = 0
                 self.task_search = None
+
+    def scan_all_disk_part_confirm(self):
+        reply = QMessageBox.question(self, "选择", "此过程时间较长，是否继续？", QMessageBox.Yes | QMessageBox.No)
+        if reply == 65536:
+            pass
+        else:
+            self.scan_all_disk_part()
 
     def scan_all_disk_part(self):
         """
