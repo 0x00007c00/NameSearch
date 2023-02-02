@@ -8,9 +8,6 @@ from mthd import core
 from uimthd import utils
 from constants import constant
 
-from PyQt5.QtCore import QStringListModel
-from PyQt5.QtGui import QTextCursor
-
 
 def save_checked_status(unchecked_list):
     """
@@ -83,7 +80,7 @@ def set_all_enabled(win, b):
     win.scan_button.setEnabled(b)
 
 
-def search_thread(win, keyword, checked_dist_part_list, rst_lst):
+def search_thread(keyword, checked_dist_part_list, rst_lst):
     print("checked_dist_part_list", checked_dist_part_list)
     result_file_list, result_folder_list = core.search_by_keyword(keyword, disks=checked_dist_part_list)
     for result_file in result_file_list:
@@ -94,22 +91,18 @@ def search_thread(win, keyword, checked_dist_part_list, rst_lst):
         rst_lst.append("文件夹：" + result_folder)
     if len(rst_lst) == 0:
         rst_lst.append("无结果")
-    slm = QStringListModel()
-    slm.setStringList(rst_lst)
-    win.listview_result.setModel(slm)
-    set_all_enabled(win, True)
-    win.logTextArea.append(utils.get_now_time("%Y-%m-%d %H:%M:%S") + " --搜索完成--")
-    win.logTextArea.moveCursor(QTextCursor.End)
+        print("Search ended, no results found")
+    else:
+        print("Search ended, %d results were found" % len(rst_lst))
 
 
-def search(win, keyword, checked_dist_part_list, rst_lst):
+def search(keyword, checked_dist_part_list, rst_lst):
     """
     查询结果，并显示
-    :param win: 窗口对象
     :param keyword: 查询关键字
     :param checked_dist_part_list: 查询磁盘列表
     """
-    t1 = threading.Thread(target=search_thread, args=(win, keyword, checked_dist_part_list, rst_lst))
+    t1 = threading.Thread(target=search_thread, args=(keyword, checked_dist_part_list, rst_lst))
     t1.start()
     return t1
 

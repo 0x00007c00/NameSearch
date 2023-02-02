@@ -67,6 +67,8 @@ class MainDialog(QWidget):
 
         depth = uimthd.config_read('depth', 'depth')
         if depth:
+            if depth == "99":
+                depth = "无限制"
             self.ui.depth.setCurrentText(depth)
         self.ui.depth.currentIndexChanged.connect(lambda: self.change_depth())
 
@@ -74,8 +76,7 @@ class MainDialog(QWidget):
 
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.clt_timer)
-        self.timer.start(3000)
-
+        self.timer.start(2000)
         print("Initialization completed")
 
     def clt_timer(self):
@@ -92,6 +93,12 @@ class MainDialog(QWidget):
             if self.search_state == 1 and not self.task_search.isAlive():
                 self.search_state = 0
                 self.task_search = None
+                slm = QStringListModel()
+                slm.setStringList(self.rst_lst)
+                self.ui.listview_result.setModel(slm)
+                uimthd.set_all_enabled(self.ui, True)
+                self.ui.logTextArea.append(utils.get_now_time("%Y-%m-%d %H:%M:%S") + " --搜索完成--")
+                self.ui.logTextArea.moveCursor(QTextCursor.End)
 
     def scan_all_disk_part_confirm(self):
         reply = QMessageBox.question(self, "选择", "此过程时间较长，是否继续？", QMessageBox.Yes | QMessageBox.No)
@@ -111,9 +118,7 @@ class MainDialog(QWidget):
 
     def search(self):
         keyword = self.ui.queryEdit.text()
-        depth = self.ui.depth.currentText()
         print('keyword', keyword)
-        print('depth', depth)
         check, update_type, last_time, overdue, msg = uimthd.check_update_list(check_types=(0, 2))
         if check:
             if update_type == 0:
@@ -149,7 +154,7 @@ class MainDialog(QWidget):
         slm.setStringList(self.rst_lst)
         self.ui.listview_result.setModel(slm)
         # search
-        self.task_search = uimthd.search(self.ui, keyword, checked_dist_part_list, self.rst_lst)
+        self.task_search = uimthd.search(keyword, checked_dist_part_list, self.rst_lst)
 
     def change_check_box(self):
         ui = self.ui
@@ -161,7 +166,10 @@ class MainDialog(QWidget):
         uimthd.save_checked_status(unchecked_list)
 
     def change_depth(self):
-        uimthd.config_write("depth", "depth", self.ui.depth.currentText())
+        v = self.ui.depth.currentText()
+        if v == "无限制":
+            v = '99'
+        uimthd.config_write("depth", "depth", v)
 
     def clicked_list(self, model_index):
         line = self.rst_lst[model_index.row()]
