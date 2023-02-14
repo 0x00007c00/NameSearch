@@ -51,7 +51,7 @@ def list_folder(path):
             yield dir_path
     except Exception as e:
         error_msg = str(e)
-        logging.warning("list_folder:" + error_msg)
+        logging.error("list_folder:" + error_msg)
         write2log(error_msg, log_file=constant.ERROR_SCAN_LOG_FILE)
 
 
@@ -94,7 +94,7 @@ def contain_str_list(file_path, keyword, disks):
                 break
             s = s.strip()
             file_name = os.path.basename(os.path.normpath(s))
-            if keyword in file_name:
+            if keyword.upper() in file_name.upper():
                 if disks:
                     for ds in disks:
                         if ds == s[0:1].upper():

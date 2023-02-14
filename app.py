@@ -2,6 +2,7 @@
 
 import os
 import sys
+import logging
 
 from PyQt5.QtCore import QStringListModel, QTimer
 from PyQt5.QtGui import QIcon, QTextCursor
@@ -77,7 +78,7 @@ class MainDialog(QWidget):
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.clt_timer)
         self.timer.start(2000)
-        print("Initialization completed")
+        logging.info("Initialization completed")
 
     def clt_timer(self):
         if self.task_scan_all_disk_part:
@@ -118,7 +119,7 @@ class MainDialog(QWidget):
 
     def search(self):
         keyword = self.ui.queryEdit.text()
-        print('keyword', keyword)
+        logging.info('keyword %s' % keyword)
         check, update_type, last_time, overdue, msg = uimthd.check_update_list(check_types=(0, 2))
         if check:
             if update_type == 0:
@@ -188,11 +189,11 @@ class MainDialog(QWidget):
                 else:
                     self.scan_all_disk_part()
             elif update_type == 1:
-                print("最后一次更新日期", last_time)
-                print("过期时间", overdue)
+                logging.info("最后一次更新日期 %s" % str(last_time))
+                logging.info("过期时间 %s", str(overdue))
                 reply = QMessageBox.question(self, "选择", msg, QMessageBox.Yes | QMessageBox.No)
                 if reply == 65536:
-                    print('选择了No')
+                    logging.info('选择了No')
                     uimthd.config_write("user", "scan_next_day", (str(int(overdue) + 1)))
                 else:
                     self.scan_all_disk_part()
@@ -205,13 +206,14 @@ class MainDialog(QWidget):
 
 
 if __name__ == '__main__':
+    logging.basicConfig(level=int(uimthd.config_read("logging", "LOGGING_LEVEL")))
     dist_part_list = []
     s_disk_part_iter = core.get_disk_info()
     for disk_part in s_disk_part_iter:
         if disk_part.fstype:
             dsk = disk_part.device[0:1]
             dist_part_list.append(dsk)
-    print("Load disk information", dist_part_list)
+    logging.info("Load disk information %s" % str(dist_part_list))
 
     app = QApplication(sys.argv)
     myDlg = MainDialog()

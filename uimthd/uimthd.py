@@ -3,6 +3,7 @@
 import threading
 import configparser
 import os
+import logging
 
 from mthd import core
 from uimthd import utils
@@ -81,7 +82,7 @@ def set_all_enabled(win, b):
 
 
 def search_thread(keyword, checked_dist_part_list, rst_lst):
-    print("checked_dist_part_list", checked_dist_part_list)
+    logging.info("checked_dist_part_list %s" % str(checked_dist_part_list))
     result_file_list, result_folder_list = core.search_by_keyword(keyword, disks=checked_dist_part_list)
     for result_file in result_file_list:
         result_file = core.path_str_format(result_file)
@@ -91,9 +92,9 @@ def search_thread(keyword, checked_dist_part_list, rst_lst):
         rst_lst.append("文件夹：" + result_folder)
     if len(rst_lst) == 0:
         rst_lst.append("无结果")
-        print("Search ended, no results found")
+        logging.info("Search ended, no results found")
     else:
-        print("Search ended, %d results were found" % len(rst_lst))
+        logging.info("Search ended, %d results were found" % len(rst_lst))
 
 
 def search(keyword, checked_dist_part_list, rst_lst):
