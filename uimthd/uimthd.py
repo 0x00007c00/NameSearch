@@ -79,6 +79,7 @@ def set_all_enabled(win, b):
     win.queryEdit.setEnabled(b)
     win.pushButton.setEnabled(b)
     win.scan_button.setEnabled(b)
+    win.depth.setEnabled(b)
 
 
 def search_thread(keyword, checked_dist_part_list, rst_lst):

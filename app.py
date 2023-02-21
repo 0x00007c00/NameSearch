@@ -36,36 +36,6 @@ class MainDialog(QWidget):
         self.setWindowIcon(QIcon('img/tb.jpg'))
         self.setFixedSize(self.width(), self.height())
 
-        self.ui.checkBox_C.hide()
-        self.ui.checkBox_D.hide()
-        self.ui.checkBox_E.hide()
-        self.ui.checkBox_F.hide()
-        self.ui.checkBox_G.hide()
-        self.ui.checkBox_H.hide()
-        self.ui.checkBox_I.hide()
-        self.ui.checkBox_J.hide()
-        self.ui.checkBox_K.hide()
-        self.ui.checkBox_L.hide()
-        for _disk_part in dist_part_list:
-            eval("self.ui.checkBox_" + _disk_part + ".show()")
-
-        unchecked = uimthd.config_read('checkbox', 'unchecked')
-        if unchecked:
-            for unchecked_part in unchecked.split(','):
-                if unchecked_part:
-                    eval("self.ui.checkBox_" + unchecked_part + ".setChecked(False)")
-
-        self.ui.checkBox_C.stateChanged.connect(lambda: self.change_check_box())
-        self.ui.checkBox_D.stateChanged.connect(lambda: self.change_check_box())
-        self.ui.checkBox_E.stateChanged.connect(lambda: self.change_check_box())
-        self.ui.checkBox_F.stateChanged.connect(lambda: self.change_check_box())
-        self.ui.checkBox_G.stateChanged.connect(lambda: self.change_check_box())
-        self.ui.checkBox_H.stateChanged.connect(lambda: self.change_check_box())
-        self.ui.checkBox_I.stateChanged.connect(lambda: self.change_check_box())
-        self.ui.checkBox_J.stateChanged.connect(lambda: self.change_check_box())
-        self.ui.checkBox_K.stateChanged.connect(lambda: self.change_check_box())
-        self.ui.checkBox_L.stateChanged.connect(lambda: self.change_check_box())
-
         depth = uimthd.config_read('depth', 'depth')
         if depth:
             if depth == "99":
@@ -143,11 +113,7 @@ class MainDialog(QWidget):
         self.search_state = 1
         self.ui.logTextArea.append(utils.get_now_time("%Y-%m-%d %H:%M:%S") + ' 正在搜索"%s"' % keyword)
         self.ui.logTextArea.moveCursor(QTextCursor.End)
-        checked_dist_part_list = []
-        for _disk_part in dist_part_list:
-            is_checked = eval("self.ui.checkBox_%s.isChecked()" % _disk_part)
-            if is_checked:
-                checked_dist_part_list.append(_disk_part)
+        checked_dist_part_list = dist_part_list
 
         uimthd.set_all_enabled(self.ui, False)
         self.rst_lst.clear()
@@ -156,15 +122,6 @@ class MainDialog(QWidget):
         self.ui.listview_result.setModel(slm)
         # search
         self.task_search = uimthd.search(keyword, checked_dist_part_list, self.rst_lst)
-
-    def change_check_box(self):
-        ui = self.ui
-        unchecked_list = []
-        for _disk_part in dist_part_list:
-            is_checked = eval("ui.checkBox_%s.isChecked()" % _disk_part)
-            if not is_checked:
-                unchecked_list.append(_disk_part)
-        uimthd.save_checked_status(unchecked_list)
 
     def change_depth(self):
         v = self.ui.depth.currentText()
